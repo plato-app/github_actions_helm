@@ -295,7 +295,9 @@ async function run() {
       };
 
       await exec.exec(helm, diffArgs, options);
-      core.setOutput("diff", diffOutput)
+      fs.appendFileSync("helm-diff.out", diffOutput)
+      fs.appendFileSync(process.env['GITHUB_OUTPUT'], `file=helm-diff.out${os.EOL}`)
+
     } else {
       await exec.exec(helm, args);
     }
