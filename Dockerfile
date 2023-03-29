@@ -3,12 +3,12 @@ FROM alpine:3.17
 ENV BASE_URL="https://get.helm.sh"
 
 ENV HELM_2_FILE="helm-v2.17.0-linux-amd64.tar.gz"
-ENV HELM_3_FILE="helm-v3.4.2-linux-amd64.tar.gz"
+ENV HELM_3_FILE="helm-v3.11.2-linux-amd64.tar.gz"
 
 RUN apk add --no-cache ca-certificates \
     --repository http://dl-3.alpinelinux.org/alpine/edge/community/ \
     --repository http://dl-3.alpinelinux.org/alpine/edge/main/ \
-    jq curl bash nodejs aws-cli && \
+    jq curl bash nodejs aws-cli git && \
     # Install helm version 2:
     curl -L ${BASE_URL}/${HELM_2_FILE} |tar xvz && \
     mv linux-amd64/helm /usr/bin/helm && \
@@ -21,6 +21,8 @@ RUN apk add --no-cache ca-certificates \
     rm -rf linux-amd64 && \
     # Init version 2 helm:
     helm init --client-only
+    
+RUN /usr/bin/helm3 plugin install https://github.com/databus23/helm-diff
 
 ENV PYTHONPATH "/usr/lib/python3.8/site-packages/"
 

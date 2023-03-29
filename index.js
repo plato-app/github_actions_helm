@@ -199,6 +199,14 @@ async function run() {
       `--namespace=${namespace}`,
     ];
 
+    const diffArgs = [
+      "diff",
+      "upgrade",
+      release,
+      chart,
+      `--namespace=${namespace}`,
+    ];
+
     // Per https://helm.sh/docs/faq/#xdg-base-directory-support
     if (helm === "helm3") {
       process.env.XDG_DATA_HOME = "/root/.helm/"
@@ -209,13 +217,31 @@ async function run() {
     }
 
     if (dryRun) args.push("--dry-run");
-    if (appName) args.push(`--set=app.name=${appName}`);
-    if (version) args.push(`--set=app.version=${version}`);
-    if (chartVersion) args.push(`--version=${chartVersion}`);
+    if (appName) {
+      args.push(`--set=app.name=${appName}`);
+      diffArgs.push(`--set=app.name=${appName}`);
+    }
+    if (version) {
+      args.push(`--set=app.version=${version}`);
+      diffArgs.push(`--set=app.version=${version}`);
+    }
+    if (chartVersion) {
+      args.push(`--version=${chartVersion}`);
+      diffArgs.push(`--version=${chartVersion}`);
+    }
     if (timeout) args.push(`--timeout=${timeout}`);
-    if (repository) args.push(`--repo=${repository}`);
-    valueFiles.forEach(f => args.push(`--values=${f}`));
+    if (repository) {
+      args.push(`--repo=${repository}`);
+      diffArgs.push(`--repo=${repository}`);
+    }
+    
+    valueFiles.forEach(f => {
+      args.push(`--values=${f}`)
+      diffArgs.push(`--values=${f}`)
+    });
+
     args.push("--values=./values.yml");
+    diffArgs.push("--values=./values.yml");
 
     // Special behaviour is triggered if the track is labelled 'canary'. The
     // service and ingress resources are disabled. Access to the canary
@@ -234,6 +260,7 @@ async function run() {
       process.env.KUBECONFIG = "./kubeconfig.yml";
       await writeFile(process.env.KUBECONFIG, process.env.KUBECONFIG_FILE);
     }
+
     await writeFile("./values.yml", values);
 
     core.debug(`env: KUBECONFIG="${process.env.KUBECONFIG}"`);
@@ -257,6 +284,17 @@ async function run() {
       await exec.exec(helm, deleteCmd(helm, namespace, release), {
         ignoreReturnCode: true
       });
+    } else if (task === "diff" ) {
+      let diffOutput = '';
+
+      options.listeners = {
+        stdout: (data) => {
+          diffOutput += data.toString();
+        }
+      };
+
+      await exec.exec(helm, diffArgs, options);
+      core.setOutput("diff", diffOutput)
     } else {
       await exec.exec(helm, args);
     }
