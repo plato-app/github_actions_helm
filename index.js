@@ -287,6 +287,7 @@ async function run() {
     } else if (task === "diff" ) {
       let diffOutput = '';
 
+      const options = {};
       options.listeners = {
         stdout: (data) => {
           diffOutput += data.toString();
