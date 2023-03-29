@@ -21,8 +21,8 @@ RUN apk add --no-cache ca-certificates \
     rm -rf linux-amd64 && \
     # Init version 2 helm:
     helm init --client-only
-    
-RUN /usr/bin/helm3 plugin install https://github.com/databus23/helm-diff
+
+RUN XDG_DATA_HOME="/root/.helm/" XDG_CONFIG_HOME="/root/.helm/" helm3 plugin install https://github.com/databus23/helm-diff
 
 ENV PYTHONPATH "/usr/lib/python3.8/site-packages/"
 
