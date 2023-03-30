@@ -206,6 +206,7 @@ async function run() {
       release,
       chart,
       `--namespace=${namespace}`,
+      "--allow-unreleased",
     ];
 
     // Per https://helm.sh/docs/faq/#xdg-base-directory-support
