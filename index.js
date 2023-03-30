@@ -218,7 +218,7 @@ async function run() {
       process.env.HELM_HOME = "/root/.helm/"
     }
 
-    if (dryRun) args.push("--dry-run");
+    if (String(dryRun) === "true") args.push("--dry-run");
     if (appName) {
       args.push(`--set=app.name=${appName}`);
       diffArgs.push(`--set=app.name=${appName}`);
