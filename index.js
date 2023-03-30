@@ -165,7 +165,7 @@ async function run() {
     const version = getInput("version");
     const valueFiles = getValueFiles(getInput("value_files"));
     const removeCanary = getInput("remove_canary");
-    const helm = getInput("helm") || "helm";
+    const helm = "helm";
     const timeout = getInput("timeout");
     const repository = getInput("repository");
     const dryRun = core.getInput("dry-run");
@@ -208,15 +208,6 @@ async function run() {
       `--namespace=${namespace}`,
       "--allow-unreleased",
     ];
-
-    // Per https://helm.sh/docs/faq/#xdg-base-directory-support
-    if (helm === "helm3") {
-      process.env.XDG_DATA_HOME = "/root/.helm/"
-      process.env.XDG_CACHE_HOME = "/root/.helm/"
-      process.env.XDG_CONFIG_HOME = "/root/.helm/"
-    } else {
-      process.env.HELM_HOME = "/root/.helm/"
-    }
 
     if (String(dryRun) === "true") args.push("--dry-run");
     if (appName) {
