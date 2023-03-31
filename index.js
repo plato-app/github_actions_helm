@@ -209,6 +209,10 @@ async function run() {
       "--allow-unreleased",
     ];
 
+    process.env.XDG_DATA_HOME = "/root/.local/share"
+    process.env.XDG_CACHE_HOME = "/root/.cache"
+    process.env.XDG_CONFIG_HOME = "/root/.config"
+  
     if (String(dryRun) === "true") args.push("--dry-run");
     if (appName) {
       args.push(`--set=app.name=${appName}`);
