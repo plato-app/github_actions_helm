@@ -272,6 +272,8 @@ async function run() {
       });
     }
 
+    await exec.exec(helm, [ "env" ]);
+
     // Actually execute the deployment here.
     if (task === "remove") {
       await exec.exec(helm, deleteCmd(helm, namespace, release), {
