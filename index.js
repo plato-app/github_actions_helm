@@ -272,6 +272,7 @@ async function run() {
     if (process.env.KUBECONFIG_FILE) {
       process.env.KUBECONFIG = "./kubeconfig.yml";
       await writeFile(process.env.KUBECONFIG, process.env.KUBECONFIG_FILE);
+      fs.chmodSync(process.env.KUBECONFIG, 0600);
     }
 
     await writeFile("./values.yml", values);
@@ -294,12 +295,7 @@ async function run() {
 
     await exec.exec(helm, [ "env" ]);
 
-    // Actually execute the deployment here.
-    if (task === "remove") {
-      await exec.exec(helm, deleteCmd(helm, namespace, release), {
-        ignoreReturnCode: true
-      });
-    } else if (task === "diff" ) {
+    const execHelmToFile = async function (helmArgs, fileName) {
       let diffOutput = '';
 
       const options = {};
@@ -309,12 +305,24 @@ async function run() {
         }
       };
 
-      await exec.exec(helm, diffArgs, options);
-      fs.appendFileSync("helm-diff.out", diffOutput)
-      fs.appendFileSync(process.env['GITHUB_OUTPUT'], `file=helm-diff.out${os.EOL}`)
+      try
+      {
+        await exec.exec(helm, helmArgs, options);
+      } finally {
+        fs.appendFileSync(fileName, diffOutput)
+        fs.appendFileSync(process.env['GITHUB_OUTPUT'], `file=${fileName}${os.EOL}`)
+      }
+    }
 
+    // Actually execute the deployment here.
+    if (task === "remove") {
+      await exec.exec(helm, deleteCmd(helm, namespace, release), {
+        ignoreReturnCode: true
+      });
+    } else if (task === "diff" ) {
+      await execHelmToFile(diffArgs, "helm-diff.out")
     } else if (task === "kubeval" ) {
-      await exec.exec(helm, kubevalArgs);
+      await execHelmToFile(kubevalArgs, "kubeval-diff.out")
     } else {
       await exec.exec(helm, args);
     }
