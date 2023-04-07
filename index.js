@@ -207,6 +207,8 @@ async function run() {
       chart,
       `--namespace=${namespace}`,
       "--allow-unreleased",
+      "--context=5",
+      "--find-renames=0.5",
     ];
 
     process.env.XDG_DATA_HOME = "/root/.local/share"
