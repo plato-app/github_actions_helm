@@ -211,6 +211,12 @@ async function run() {
       "--find-renames=0.5",
     ];
 
+    const kubevalArgs = [
+      "kubeval",
+      chart,
+      `--namespace=${namespace}`,
+    ]
+
     process.env.XDG_DATA_HOME = "/root/.local/share"
     process.env.XDG_CACHE_HOME = "/root/.cache"
     process.env.XDG_CONFIG_HOME = "/root/.config"
@@ -219,28 +225,34 @@ async function run() {
     if (appName) {
       args.push(`--set=app.name=${appName}`);
       diffArgs.push(`--set=app.name=${appName}`);
+      kubevalArgs.push(`--set=app.name=${appName}`);
     }
     if (version) {
       args.push(`--set=app.version=${version}`);
       diffArgs.push(`--set=app.version=${version}`);
+      kubevalArgs.push(`--set=app.version=${version}`);
     }
     if (chartVersion) {
       args.push(`--version=${chartVersion}`);
       diffArgs.push(`--version=${chartVersion}`);
+      kubevalArgs.push(`--version=${chartVersion}`);
     }
     if (timeout) args.push(`--timeout=${timeout}`);
     if (repository) {
       args.push(`--repo=${repository}`);
       diffArgs.push(`--repo=${repository}`);
+      kubevalArgs.push(`--repo=${repository}`);
     }
     
     valueFiles.forEach(f => {
       args.push(`--values=${f}`)
       diffArgs.push(`--values=${f}`)
+      kubevalArgs.push(`--values=${f}`)
     });
 
     args.push("--values=./values.yml");
     diffArgs.push("--values=./values.yml");
+    kubevalArgs.push("--values=./values.yml");
 
     // Special behaviour is triggered if the track is labelled 'canary'. The
     // service and ingress resources are disabled. Access to the canary
@@ -299,6 +311,8 @@ async function run() {
       fs.appendFileSync("helm-diff.out", diffOutput)
       fs.appendFileSync(process.env['GITHUB_OUTPUT'], `file=helm-diff.out${os.EOL}`)
 
+    } else if (task === "kubeval" ) {
+      await exec.exec(helm, kubevalArgs);
     } else {
       await exec.exec(helm, args);
     }
