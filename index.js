@@ -213,6 +213,8 @@ async function run() {
 
     const kubevalArgs = [
       "kubeval",
+      "--schema-location",
+      "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master",
       chart,
       `--namespace=${namespace}`,
     ]
