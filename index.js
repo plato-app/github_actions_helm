@@ -222,8 +222,7 @@ async function run() {
     ]
 
     if (schemaLocation) {
-      kubevalArgs.push("--additional-schema-locations");
-      kubevalArgs.push(`"${schemaLocation}"`);
+      kubevalArgs[2] = `"${schemaLocation}"`
     }
 
     process.env.XDG_DATA_HOME = "/root/.local/share"
