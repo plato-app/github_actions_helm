@@ -222,7 +222,7 @@ async function run() {
     ]
 
     if (schemaLocation) {
-      kubevalArgs[2] = `"${schemaLocation}"`
+      kubevalArgs[2] = `${schemaLocation}`
     }
 
     process.env.XDG_DATA_HOME = "/root/.local/share"
