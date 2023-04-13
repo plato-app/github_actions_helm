@@ -171,6 +171,7 @@ async function run() {
     const dryRun = core.getInput("dry-run");
     const secrets = getSecrets(core.getInput("secrets"));
     const atomic = getInput("atomic") || true;
+    const schemaLocation = getInput("schema_location");
 
     core.debug(`param: track = "${track}"`);
     core.debug(`param: release = "${release}"`);
@@ -188,6 +189,7 @@ async function run() {
     core.debug(`param: timeout = "${timeout}"`);
     core.debug(`param: repository = "${repository}"`);
     core.debug(`param: atomic = "${atomic}"`);
+    core.debug(`parma: scema_location = "${schemaLocation}"`);
 
 
     // Setup command options and arguments.
@@ -218,6 +220,11 @@ async function run() {
       chart,
       `--namespace=${namespace}`,
     ]
+
+    if (schemaLocation) {
+      kubevalArgs.push("--additional-schema-locations");
+      kubevalArgs.push(`"${schemaLocation}"`);
+    }
 
     process.env.XDG_DATA_HOME = "/root/.local/share"
     process.env.XDG_CACHE_HOME = "/root/.cache"
