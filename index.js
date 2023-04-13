@@ -189,7 +189,7 @@ async function run() {
     core.debug(`param: timeout = "${timeout}"`);
     core.debug(`param: repository = "${repository}"`);
     core.debug(`param: atomic = "${atomic}"`);
-    core.debug(`parma: scema_location = "${schemaLocation}"`);
+    core.debug(`parma: schema_location = "${schemaLocation}"`);
 
 
     // Setup command options and arguments.
