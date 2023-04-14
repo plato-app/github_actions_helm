@@ -209,7 +209,7 @@ async function run() {
       chart,
       `--namespace=${namespace}`,
       "--allow-unreleased",
-      "--context=5",
+      "--context=2",
       "--find-renames=0.5",
     ];
 
