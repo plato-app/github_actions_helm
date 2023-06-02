@@ -114,6 +114,17 @@ function getInput(name, options) {
   return val;
 }
 
+function getInputSecrets(name, options) {
+  let val = core.getSecrets(name.replace("_", "-"), {
+    ...options,
+    required: false
+  });
+  if (options && options.required && !val) {
+    throw new Error(`Secret required and not supplied: ${name}`);
+  }
+  return val;
+}
+
 /**
  * Render files renders data into the list of provided files.
  * @param {Array<string>} files
@@ -168,6 +179,8 @@ async function run() {
     const helm = "helm";
     const timeout = getInput("timeout");
     const repository = getInput("repository");
+    const repositoryUsername = getInput("repository_username");
+    const repositoryPassword = getInputSecrets("repository_password");
     const dryRun = core.getInput("dry-run");
     const secrets = getSecrets(core.getInput("secrets"));
     const atomic = getInput("atomic") || true;
@@ -188,6 +201,8 @@ async function run() {
     core.debug(`param: removeCanary = ${removeCanary}`);
     core.debug(`param: timeout = "${timeout}"`);
     core.debug(`param: repository = "${repository}"`);
+    core.debug(`param: repository_username = "${repositoryUsername}"`);
+    core.debug(`param: repository_password = "${repositoryPassword}"`);
     core.debug(`param: atomic = "${atomic}"`);
     core.debug(`parma: schema_location = "${schemaLocation}"`);
 
@@ -251,7 +266,16 @@ async function run() {
       diffArgs.push(`--repo=${repository}`);
       kubevalArgs.push(`--repo=${repository}`);
     }
-    
+    if (repositoryUsername) {
+      args.push(`--username=${repositoryUsername}`);
+      diffArgs.push(`--username=${repositoryUsername}`);
+      kubevalArgs.push(`--username=${repositoryUsername}`);
+    }
+    if (repositoryPassword) {
+      args.push(`--password=${repositoryPassword}`);
+      diffArgs.push(`--password=${repositoryPassword}`);
+      kubevalArgs.push(`--password=${repositoryPassword}`);
+    }
     valueFiles.forEach(f => {
       args.push(`--values=${f}`)
       diffArgs.push(`--values=${f}`)

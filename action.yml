@@ -14,6 +14,12 @@ inputs:
     description: Helm chart path. If set to "app" this will use the built in helm
       chart found in this repository. (required)
     required: true
+  repository:
+    description: Helm repo url to use
+    required: false
+  repository-username:
+    description: Helm repo username
+    required: false
   values:
     description: Helm chart values, expected to be a YAML or JSON string.
     required: false
@@ -47,6 +53,10 @@ inputs:
     required: false
   schema-location:
     description: addition json openapi schema locations for validate
+    required: false
+secrets:
+  repository-password:
+    description: Helm repo password
     required: false
 runs:
   using: docker
