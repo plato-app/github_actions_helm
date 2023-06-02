@@ -20,6 +20,9 @@ inputs:
   repository-username:
     description: Helm repo username
     required: false
+  repository-password:
+    description: Helm repo password
+    required: false
   values:
     description: Helm chart values, expected to be a YAML or JSON string.
     required: false
@@ -53,10 +56,6 @@ inputs:
     required: false
   schema-location:
     description: addition json openapi schema locations for validate
-    required: false
-secrets:
-  repository-password:
-    description: Helm repo password
     required: false
 runs:
   using: docker
